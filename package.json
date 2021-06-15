@@ -1,7 +1,7 @@
 {
   "name": "Employee-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "a command line app for viewing, and editing employees",
   "main": "query.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

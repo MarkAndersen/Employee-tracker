@@ -28,14 +28,70 @@ connection.connect((err) => {
                 'Add employee',
                 'Add department',
                 'Add role',
-                'Update employee'
-            ]
+                'Update employee',
+            ],
         })
         .then((answer) => {
             console.log(answer.action);
+            switch (answer.action) {
+                case 'View all employees':
+                    //employee console.table;
+                    showEmployee();
+                    break;
+
+                case 'View all employees by department':
+                    //employee where department console.table
+                    showEmployeeDept();
+                    break;
+
+                case 'View all employees by role':
+                    //employee where role = console.table
+                    showEmployeeRole();
+                    break;
+                
+                case 'Add employee':
+                    addEmployee();
+                    break;
+                
+                case 'Add department':
+                    addDepartment();
+                    break;
+
+                case 'Add role':
+                    addRole();
+                    break;
+                
+                default:
+                    console.log(`invalid action: ${answer.action}`);
+                    break;
+            }
             //switch case to guide the user to select an action
-        })
-  }
+        });
+  };
+  const showEmployee = () => {
+//let employee = []
+//console.table [column Name, values]
+  };
+  const showEmployeeDept = () => {
+//let employee = []
+//console.table [column Name, values]    
+  };
+  const showEmployeeRole = () => {
+//let employee = []
+//console.table [column Name, values]
+  };
+  const addEmployee = () => {
+//addEmployee(inquirer - input, INSERT INTO)
+  };
+
+  const addDepartment = () => {
+//addDepartment(inquirer - input, INSERT INTO)
+  };
+
+  const addRole = () => {
+//addRole(inquirer - input, INSERT INTO)
+  };
+
   //TODO:
   //INIT();
 
