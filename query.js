@@ -1,25 +1,25 @@
 //dependencies
-const mysql = require("mysql");
-const inquirer = require("inquirer");
-const cTable = require("console.table");
+const mysql = require('mysql');
+const inquirer = require('inquirer');
+const cTable = require('console.table');
 console.table([
   {
-    name: "foo",
+    name: 'foo',
     age: 10,
   },
   {
-    name: "bar",
+    name: 'bar',
     age: 20,
   },
 ]);
 
 //connection to the db
 const connection = mysql.createConnection({
-  host: "localhost",
+  host: 'localhost',
   port: 3306,
-  user: "root",
-  password: "6488",
-  database: "employees_db",
+  user: 'root',
+  password: '6488',
+  database: 'employees_db',
 });
 
 //connection method and initialization call
@@ -33,47 +33,47 @@ connection.connect((err) => {
 const init = () => {
   inquirer
     .prompt({
-      name: "action",
-      type: "list",
-      message: "What would you like to do?",
+      name: 'action',
+      type: 'list',
+      message: 'What would you like to do?',
       choices: [
-        "View all employees",
-        "View all departments",
-        "View all roles",
-        "Add employee",
-        "Add department",
-        "Add role",
-        "Update employee",
-        "Exit"
+        'View all employees',
+        'View all departments',
+        'View all roles',
+        'Add employee',
+        'Add department',
+        'Add role',
+        'Update employee',
+        'Exit'
       ],
     })
     .then((answer) => {
       switch (answer.action) {
-        case "View all employees":
+        case 'View all employees':
           showEmployee();
           break;
 
-        case "View all departments":
+        case 'View all departments':
           showEmployeeDept();
           break;
 
-        case "View all roles":
+        case 'View all roles':
           showEmployeeRole();
           break;
 
-        case "Add employee":
+        case 'Add employee':
           addEmployee();
           break;
 
-        case "Add department":
+        case 'Add department':
           addDepartment();
           break;
 
-        case "Add role":
+        case 'Add role':
           addRole();
           break;
 
-        case "Exit":
+        case 'Exit':
           connection.end();
           break;
 
@@ -89,9 +89,9 @@ const init = () => {
 const nextStep = () => {
   inquirer
     .prompt({
-      name: "action",
-      type: "confirm",
-      message: "Would you like to edit more?",
+      name: 'action',
+      type: 'confirm',
+      message: 'Would you like to edit more?',
     })
     .then((answer) => {
       if (answer.action === true) {
@@ -104,7 +104,7 @@ const nextStep = () => {
 
 //Methods to view database
 const showEmployee = () => {
-  const query = "SELECT * FROM employee";
+  const query = 'SELECT * FROM employee';
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -112,7 +112,7 @@ const showEmployee = () => {
   });
 };
 const showEmployeeDept = () => {
-  const query = "SELECT * FROM department";
+  const query = 'SELECT * FROM department';
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -120,7 +120,7 @@ const showEmployeeDept = () => {
   });
 };
 const showEmployeeRole = () => {
-  const query = "SELECT * FROM role";
+  const query = 'SELECT * FROM role';
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -134,72 +134,85 @@ const addEmployee = () => {
   inquirer
     .prompt([
       {
-        name: "first",
-        type: "input",
-        message: "First Name",
+        name: 'first',
+        type: 'input',
+        message: 'First Name',
       },
       {
-        name: "last",
-        type: "input",
-        message: "Last Name",
+        name: 'last',
+        type: 'input',
+        message: 'Last Name',
       },
       {
-        name: "manager",
-        type: "input",
-        message: "Manager ID",
+        name: 'manager_id',
+        type: 'input',
+        message: 'Manager ID',
       },
       {
-        name: "role",
-        type: "input",
-        message: "Role ID",
+        name: 'role_id',
+        type: 'input',
+        message: 'Role ID',
       },
     ])
     .then((answer) => {
-      console.log(answer);
+      const query = `INSERT INTO employee (first_name, last_name, manager_id, role_id) VALUES ('${answer.first}', '${answer.last}', '${answer.manager_id}', '${answer.role_id}')`;
+      connection.query(query, (err, res) => {
+        if (err) throw err; 
+      });
+    })
+    .then(() => {
       nextStep();
     });
-
 };
 
 const addDepartment = () => {
-  //addDepartment(inquirer - input, INSERT INTO)
   inquirer
-  .prompt(
-    {
-      name: "dept",
-      type: "input",
-      message: "Department Name",
-    }
-  )
+    .prompt(
+      {
+       name: 'dept',
+       type: 'input',
+       message: 'Department Name',
+      }
+    )
   .then((answer) => {
-    console.log(answer);
+    const query = `INSERT INTO department (name) VALUES ('${answer.dept}')`;
+    connection.query(query, (err, res) => {
+      if (err) throw err; 
+    });
+  })
+  .then(() => {
     nextStep();
   });
-
 };
+
 
 const addRole = () => {
   //addRole(inquirer - input, INSERT INTO)
   inquirer
   .prompt([
     {
-      name: "role",
-      type: "input",
-      message: "Role",
+      name: 'title',
+      type: 'input',
+      message: 'Title?',
     },
     {
-      name: "salary",
-      type: "input",
-      message: "Salary",
+      name: 'salary',
+      type: 'input',
+      message: 'Salary?',
     },
     {
-      name: "dept",
-      type: "input",
-      message: "Department ID",
+      name: 'dept_id',
+      type: 'input',
+      message: 'Department ID',
     }
   ])
   .then((answer) => {
-    console.log(answer);
+    const query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', '${answer.salary}', '${answer.dept_id}')`;
+    connection.query(query, (err, res) => {
+      if (err) throw err;
+    });
+  })
+  .then(() => {
     nextStep();
   });
 };
