@@ -28,4 +28,3 @@ CREATE TABLE employee (
     manager_id INT (11), -- references to employee that manages another, may be null
     PRIMARY KEY (id)
 ),
--- SELECT * FROM deparment
