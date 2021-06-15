@@ -13,9 +13,29 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
     if (err) throw err;
-    console.log('connected to the db!')
+    console.log(`connected as id ${connection.threadId}\n`);
+    init();
   });
 
+  const init = () => {
+      inquirer
+        .prompt ({
+            name: 'action',
+            type: 'list',
+            message: 'What would you like to do?',
+            choices: [
+                'View all employees, departments and roles',
+                'Add employee',
+                'Add department',
+                'Add role',
+                'Update employee'
+            ]
+        })
+        .then((answer) => {
+            console.log(answer.action);
+            //switch case to guide the user to select an action
+        })
+  }
   //TODO:
   //INIT();
 
