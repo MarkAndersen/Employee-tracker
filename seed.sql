@@ -8,3 +8,11 @@ VALUES ('Developer', '50000', 1);
 
 INSERT INTO department (name)
 VALUES ('Programmer');
+
+ALTER TABLE employee AUTO_INCREMENT = 1;
+ALTER TABLE role AUTO_INCREMENT = 1;
+ALTER TABLE department AUTO_INCREMENT = 1;
+
+DELETE FROM employee WHERE id =  ;
+DELETE FROM role WHERE id =  ;
+DELETE FROM department WHERE id =  ;
