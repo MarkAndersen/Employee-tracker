@@ -1,3 +1,10 @@
+//TODO:
+
+//Joining tables to output- view
+
+//at the very least, needs to:
+
+//ONCE THIS TODO IS DONE, LOOK INTO BONUS MATERIAL
 //dependencies
 const mysql = require("mysql");
 const inquirer = require("inquirer");
@@ -112,6 +119,7 @@ const nextStep = () => {
 };
 
 //Methods to view database
+//add the joins and tighten this up.
 const showEmployee = () => {
   const query = "SELECT * FROM employee";
   connection.query(query, (err, res) => {
@@ -138,7 +146,7 @@ const showEmployeeRole = () => {
 };
 
 //methods to add employees, departments, roles, etc.
-//addEmployee(inquirer - input, INSERT INTO)
+//TODO: put a wrapper query in to have a selection of pre-existing roles? or at least id-numbers to assign.
 const addEmployee = () => {
   inquirer
     .prompt([
@@ -199,7 +207,6 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-  //addRole(inquirer - input, INSERT INTO)
   inquirer
     .prompt([
       {
@@ -357,19 +364,3 @@ const deleteEmployee = () => {
   // });
 };
 
-//TODO:
-
-//Joining tables to output
-
-//at the very least, needs to:
-
-//  * View departments, roles, employees
-//  -THIS IS WHERE CONSOLE.TABLE COMES INTO PLAY
-
-//  * Update employee roles:
-//  - EXMPLE BELOW... MAY HAVE A SWITCH CASE OR LOOP
-//  - UPDATE table
-//    SET has_pet = true, pet_name = 'Franklin', pet_age = 2
-//    WHERE name = 'Peter';
-
-//    ONCE THIS TODO IS DONE, LOOK INTO BONUS MATERIAL
