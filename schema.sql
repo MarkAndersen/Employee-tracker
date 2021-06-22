@@ -8,7 +8,7 @@ CREATE TABLE department (
     id INT(11) AUTO_INCREMENT,
     name VARCHAR(30),
     PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE role (
     id INT(11) AUTO_INCREMENT,

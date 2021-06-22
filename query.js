@@ -119,26 +119,25 @@ const nextStep = () => {
 };
 
 //Methods to view database
-//add the joins and tighten this up.
 const showEmployee = () => {
-  const query = "SELECT * FROM employee";
-  connection.query(query, (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    nextStep();
-  });
+  connection.query(
+    "SELECT first_name, last_name, title, salary, name FROM department JOIN role ON department_id = department.id JOIN employee ON role_id=role.id ",
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      nextStep();
+    }
+  );
 };
 const showEmployeeDept = () => {
-  const query = "SELECT * FROM department";
-  connection.query(query, (err, res) => {
+  connection.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
     console.table(res);
     nextStep();
   });
 };
 const showEmployeeRole = () => {
-  const query = "SELECT * FROM role";
-  connection.query(query, (err, res) => {
+  connection.query("SELECT * FROM role", (err, res) => {
     if (err) throw err;
     console.table(res);
     nextStep();
@@ -148,44 +147,63 @@ const showEmployeeRole = () => {
 //methods to add employees, departments, roles, etc.
 //TODO: put a wrapper query in to have a selection of pre-existing roles? or at least id-numbers to assign.
 const addEmployee = () => {
-  inquirer
-    .prompt([
-      {
-        name: "first",
-        type: "input",
-        message: "First Name",
-      },
-      {
-        name: "last",
-        type: "input",
-        message: "Last Name",
-      },
-      {
-        name: "id",
-        type: "input",
-        message: "Employee ID",
-      },
-      {
-        name: "manager_id",
-        type: "input",
-        message: "Manager ID",
-      },
-      {
-        name: "role_id",
-        type: "input",
-        message: "Role ID",
-      },
-    ])
-    .then((answer) => {
-      const query = `INSERT INTO employee (id, first_name, last_name, manager_id, role_id) VALUES ('${answer.id}', '${answer.first}', '${answer.last}', '${answer.manager_id}', '${answer.role_id}')`;
-      connection.query(query, (err, res) => {
-        if (err) throw err;
-        console.log(res);
+  connection.query("SELECT * FROM role", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          name: "first",
+          type: "input",
+          message: "First Name",
+        },
+        {
+          name: "last",
+          type: "input",
+          message: "Last Name",
+        },
+        {
+          name: "manager_id",
+          type: "input",
+          message: "Manager ID?",
+        },
+        {
+          name: "role_id",
+          type: "rawlist",
+          choices() {
+            const choiceArray = [];
+            res.forEach(({ title }) => {
+              choiceArray.push(title);
+            });
+            return choiceArray;
+          },
+          message: "What role?",
+        },
+      ])
+      .then((answer) => {
+        console.log(answer.role_id);
+        connection.query("SELECT title FROM role", (err, res) => {
+          if (err) throw err;
+          const titleArray = [];
+          res.forEach(({ title }) => {
+            titleArray.push(title);
+          });
+          const chosen = titleArray.indexOf(answer.role_id);
+          console.log(chosen);
+          connection.query(
+            `INSERT INTO employee (first_name, last_name, manager_id, role_id) VALUES ('${
+              answer.first
+            }', '${answer.last}', '${answer.manager_id}', '${chosen + 1}')`,
+            (err, res) => {
+              if (err) throw err;
+              console.log(res);
+            }
+          );
+        });
+      })
+      .then(() => {
+        nextStep();
       });
-    })
-    .then(() => {
-      nextStep();
-    });
+  });
 };
 
 const addDepartment = () => {
@@ -196,10 +214,12 @@ const addDepartment = () => {
       message: "Department Name",
     })
     .then((answer) => {
-      const query = `INSERT INTO department (name) VALUES ('${answer.dept}')`;
-      connection.query(query, (err, res) => {
-        if (err) throw err;
-      });
+      connection.query(
+        `INSERT INTO department (name) VALUES ('${answer.dept}')`,
+        (err, res) => {
+          if (err) throw err;
+        }
+      );
     })
     .then(() => {
       nextStep();
@@ -207,6 +227,8 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
+  connection.query('SELECT * FROM department', (err, res) => {
+    if (err) throw err;
   inquirer
     .prompt([
       {
@@ -221,58 +243,93 @@ const addRole = () => {
       },
       {
         name: "dept_id",
-        type: "input",
-        message: "Department ID",
+        type: "rawlist",
+        choices() {
+            const secondChoiceArray = [];
+            res.forEach(({ name }) => {
+              secondChoiceArray.push(name);
+            });
+            return secondChoiceArray;
+          },
+          message: "Which department?",
       },
     ])
     .then((answer) => {
-      const query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', '${answer.salary}', '${answer.dept_id}')`;
-      connection.query(query, (err, res) => {
+      connection.query('SELECT name FROM department', (err, res) => {
         if (err) throw err;
-      });
+        const nameArray = [];
+        res.forEach(({ name }) => {
+          nameArray.push(name);
+        });
+        const chosenDept = nameArray.indexOf(answer.dept_id);
+      connection.query(
+        `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', '${answer.salary}', '${chosenDept + 1}')`,
+        (err, res) => {
+          if (err) throw err;
+          console.log(res);
+        }
+      );
     })
+  })
     .then(() => {
       nextStep();
     });
+  });
+
 };
 
 //updating rows
 const updateEmployee = () => {
-  inquirer
-    .prompt({
-      name: "update",
-      type: "list",
-      messages: "What would you like to update?",
-      choices: ["Salary", "Role", "Manager", "Restart", "Exit"],
-    })
-    .then((answer) => {
-      switch (answer.update) {
-        case "Salary":
-          updateSalary();
-          break;
+  connection.query("SELECT id FROM employee", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          name: "employee",
+          type: "rawlist",
+          choices() {
+            const choiceArray = [];
+            res.forEach(({ id }) => {
+              choiceArray.push(id);
+            });
+            return choiceArray;
+          },
+          message: "Which employee are you updating?",
+        },
+        {
+          name: "update",
+          type: "list",
+          messages: "What would you like to update?",
+          choices: ["Salary", "Role", "Manager", "Restart", "Exit"],
+        },
+      ])
+      .then((answer) => {
+        switch (answer.update) {
+          case "Salary":
+            updateSalary();
+            break;
 
-        case "Role":
-          updateRole();
-          break;
+          case "Role":
+            updateRole();
+            break;
 
-        case "Manager":
-          updateManager();
-          break;
+          case "Restart":
+            nextStep();
+            break;
 
-        case "Restart":
-          nextStep();
-          break;
+          case "Exit":
+            connection.end();
+            break;
 
-        case "Exit":
-          connection.end();
-          break;
+          default:
+            console.log(`invalid action: ${answer.action}`);
+            nextStep();
+            break;
+        }
 
-        default:
-          console.log(`invalid action: ${answer.action}`);
-          nextStep();
-          break;
-      }
-    });
+        console.log(answer);
+      });
+  });
 };
 
 //updating methods
@@ -290,11 +347,13 @@ const updateSalary = () => {
       },
     })
     .then((answer) => {
-      const query = `UPDATE role SET salary = ${answer.salary} WHERE id = 1`;
-      connection.query(query, (err, res) => {
-        if (err) throw err;
-        console.log(res);
-      });
+      connection.query(
+        `UPDATE role SET salary = ${answer.salary} WHERE id = 1`,
+        (err, res) => {
+          if (err) throw err;
+          console.log(res);
+        }
+      );
     })
     .then(() => {
       nextStep();
@@ -309,42 +368,42 @@ const updateRole = () => {
       message: "What are you updating the employee title to?",
     })
     .then((answer) => {
-      const query = `UPDATE role SET title = ${answer.new_role} WHERE id = 1`;
-      connection.query(query, (err, res) => {
-        if (err) throw err;
-        console.log(res);
-      });
+      connection.query(
+        `UPDATE role SET title = ${answer.new_role} WHERE id = 1`,
+        (err, res) => {
+          if (err) throw err;
+          console.log(res);
+        }
+      );
     })
     .then(() => {
       nextStep();
     });
 };
-
-const updateManager = () => {
-  inquirer
-    .prompt({
-      name: "new_manager",
-      type: "input",
-      message: "Who are you updating the employee's manager to?",
-    })
-    .then((answer) => {
-      const query = `UPDATE employee SET manager_id = ${answer.new_manager} WHERE id = 1`;
-      connection.query(query, (err, res) => {
-        if (err) throw err;
-        console.log(res);
-      });
-    })
-    .then(() => {
-      nextStep();
-    });
-};
-
-
-
-
 
 
 //ICE BOX
+// const updateManager = () => {
+//   inquirer
+//     .prompt({
+//       name: "new_manager",
+//       type: "input",
+//       message: "Who are you updating the employee's manager to?",
+//     })
+//     .then((answer) => {
+//       connection.query(
+//         `UPDATE employee SET manager_id = ${answer.new_manager} WHERE id = 1`,
+//         (err, res) => {
+//           if (err) throw err;
+//           console.log(res);
+//         }
+//       );
+//     })
+//     .then(() => {
+//       nextStep();
+//     });
+// };
+
 const deleteEmployee = () => {
   // connection.query('SELECT first_name, last_name FROM employee', (err, res) =>{
   //   if (err) throw err;
@@ -363,4 +422,3 @@ const deleteEmployee = () => {
   //   connection.end();
   // });
 };
-
