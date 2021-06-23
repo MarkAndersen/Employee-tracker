@@ -351,7 +351,7 @@ const updateRole = () => {
 //three nested qb queries:
         connection.query("SELECT * FROM employee", (err) => {
           if (err) throw err;
-//snagging first_name out of our selection
+//splitting name strings to pass to the query and match to the DB info condition
           const nameArray = selectedEmployee.split(/(\s+)/);
           
 //matching role id and index to update
