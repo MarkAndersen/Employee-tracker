@@ -24,7 +24,7 @@ To start the server:
 
 ## Example:
 
-![Example](/example.png)
+![Example](./image/example.png)
 
 ## Challenges & Thoughts:
 I iceboxed some features to delete employees and update salaries per employee, using multiple joins and CASCADE for deletion. nesting queries seemed key and I had challenges passing inquirer information into the queries to push up and update. I could have created classes and separated functions to make this cleaner, also this app may not be very DRY however it is functional. 
