@@ -17,10 +17,10 @@ console.table([
 //connection to the db
 //**Ensure the settings below match your machine!**
 const connection = mysql.createConnection({
-  host: "", //probably localhost!
-  port: , //change port! 
-  user: "", //change user!
-  password: "", //change password!
+  host: "localhost", //probably localhost!
+  port: 3306, //change port! 
+  user: "root", //change user!
+  password: "6488", //change password!
   database: "employees_db",
 });
 
