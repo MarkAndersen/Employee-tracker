@@ -18,6 +18,7 @@ In the command line:
 - npm i mysql
 - npm install console.table --save
 - ***Ensure that the host, port and password matches your local setup***
+- ***Create a database called employees_db, using the schema included***
 
 To start the server:
 - node query.js
